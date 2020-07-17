@@ -2,7 +2,7 @@
 /*
    Set I2C Slave address
 */
-#define I2C_SLAVE_ADDRESS 0x14
+#define I2C_ADDRESS 0x14
 
 // #define DEBUG
 
@@ -41,7 +41,7 @@ void receiveEvent(int howMany) {
 }
 
 void setup() {
-  Wire.begin(I2C_SLAVE_ADDRESS);
+  Wire.begin(I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
 
@@ -56,11 +56,11 @@ void loop() {
   /*
      Measurement is done every 6th wakeup, that gives more less 10Hz update rate (96ms)
   */
-  unsigned long now = millis(); 
+  unsigned long now = millis();
   if ( now > nextUpdate) {
     nextUpdate = now + 100;
 
-    long duration = 22;  // TODO FIX 
+    long duration = 22 + (now % 5000) / 1000; // TODO FIX
 
     uint8_t stat = STATUS_OUT_OF_RANGE;
 
