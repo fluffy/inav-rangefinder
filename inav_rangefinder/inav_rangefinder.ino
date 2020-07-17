@@ -27,35 +27,34 @@ void requestEvent()
   Wire.write(i2c_regs, 3);
 }
 
-void receiveEvent(int howMany) {
-
+void receiveEvent(int howMany)
+{
   if (howMany < 1) {
     // Sanity-check
     return;
   }
 
-  while (howMany > 0) {
+  while ( (howMany--) > 0) {
     Wire.read();
-    howMany--;
   }
 }
 
-void setup() {
+void setup()
+{
   Wire.begin(I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
 
+#ifdef DEBUG
   Serial.begin(115200);
+#endif
 }
 
 
-void loop() {
+void loop()
+{
+  static unsigned long nextUpdate = 0;
 
-  static uint32_t nextUpdate = 0;
-
-  /*
-     Measurement is done every 6th wakeup, that gives more less 10Hz update rate (96ms)
-  */
   unsigned long now = millis();
   if ( now > nextUpdate) {
     nextUpdate = now + 100;
