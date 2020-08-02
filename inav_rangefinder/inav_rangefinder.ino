@@ -4,7 +4,7 @@
 */
 #define I2C_ADDRESS 0x14
 
-// #define DEBUG
+#define DEBUG
 
 
 #define STATUS_OK 0
@@ -12,6 +12,7 @@
 
 #include <Wire.h>
 
+uint8_t reqCount;
 
 uint8_t i2c_regs[] =
 {
@@ -25,6 +26,8 @@ const byte reg_size = sizeof(i2c_regs);
 void requestEvent()
 {
   Wire.write(i2c_regs, 3);
+
+  reqCount++;
 }
 
 void receiveEvent(int howMany)
@@ -41,6 +44,8 @@ void receiveEvent(int howMany)
 
 void setup()
 {
+  reqCount = 0;
+
   Wire.begin(I2C_ADDRESS);
   Wire.onRequest(requestEvent);
   Wire.onReceive(receiveEvent);
@@ -57,9 +62,9 @@ void loop()
 
   unsigned long now = millis();
   if ( now > nextUpdate) {
-    nextUpdate = now + 100;
+    nextUpdate = now + 250;
 
-    long duration = 22 + (now % 5000) / 1000; // TODO FIX
+    long duration = 22 + (now % 5000) / 100; // TODO FIX
 
     uint8_t stat = STATUS_OUT_OF_RANGE;
 
@@ -81,7 +86,9 @@ void loop()
     Serial.print(" ");
     Serial.print(i2c_regs[1]);
     Serial.print(" ");
-    Serial.println(i2c_regs[2]);
+    Serial.print(i2c_regs[2]);
+    Serial.print(" reqCount=");
+    Serial.println(reqCount);
 #endif
   }
 }
